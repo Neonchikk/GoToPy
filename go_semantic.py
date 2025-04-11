@@ -13,7 +13,7 @@ class SemanticAnalyzer:
 
     def error(self, msg: str, node: AstNode):
         line = getattr(node, 'lineno', '?')
-        self.errors.append(f"msg}")
+        self.errors.append(f"{msg}")
 
     def analyze(self, node: AstNode) -> bool:
         """Основной метод анализа. Возвращает True если нет ошибок"""
