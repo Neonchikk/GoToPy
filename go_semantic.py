@@ -12,7 +12,8 @@ class SemanticAnalyzer:
         self.loop_depth = 0  # Для проверки break/continue
 
     def error(self, msg: str, node: AstNode):
-        self.errors.append(f"Line {getattr(node, 'line', '?')}: {msg}")
+        line = getattr(node, 'lineno', '?')
+        self.errors.append(f"msg}")
 
     def analyze(self, node: AstNode) -> bool:
         """Основной метод анализа. Возвращает True если нет ошибок"""
