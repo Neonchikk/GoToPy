@@ -1,20 +1,77 @@
 from go_parser import build_tree
+from go_semantic import SemanticAnalyzer
 
-sample_code = """
-func factorial(n: int): int {
-    if (n <= 1) {
-        return 1;
+
+def test_semantic_analysis(code: str, test_name: str):
+    print(f"\n{'=' * 50}\nТест: {test_name}\n{'=' * 50}")
+    print("Исходный код:")
+    print(code.strip())
+
+    print("\nРезультат парсинга:")
+    ast = build_tree(code)
+    print("\n".join(ast.tree))
+
+    print("\nСемантический анализ:")
+    analyzer = SemanticAnalyzer()
+    if analyzer.analyze(ast):
+        print("✅ Программа семантически корректна")
+    else:
+        print("❌ Обнаружены ошибки:")
+        for error in analyzer.errors:
+            print(f"  - {error}")
+
+
+def main():
+    # Корректная программа
+    correct_code = """
+    func factorial(n: int): int {
+        if (n <= 1) {
+            return 1;
+        }
+        return n * factorial(n - 1);
     }
-    return n * factorial(n - 1);
-}
 
-func main(): int {
-    var result: int = factorial(5);
-    print("Factorial of 5 is", result);
-    return 0;
-}
-"""
+    func main(): int {
+        var result: int = factorial(5);
+        print("Result:", result);
+        return 0;
+    }
+    """
+
+    # Программа с ошибками
+    error_code = """
+    func foo(): int {
+        var x: int = 10;
+        var x: string = "error";  // Дублирование
+        y = 5;  // Необъявленная переменная
+        return "string";  // Несоответствие типа
+    }
+
+    func bar(a: int, b: float) {
+        var res: bool = a + b;  // Несовместимость типов
+        if (42) {  // Условие не boolean
+            print("Hello");
+        }
+    }
+    """
+
+    # Тестирование
+    test_semantic_analysis(correct_code, "Корректная программа")
+    test_semantic_analysis(error_code, "Программа с ошибками")
+
+    # Интерактивный режим (можно ввести свой код на языке Go для проверки)
+    # print("\n\nВы можете ввести свой код для проверки (завершите ввод пустой строкой):")
+    # user_lines = []
+    # while True:
+    #     line = input()
+    #     if not line:
+    #         break
+    #     user_lines.append(line)
+    #
+    # if user_lines:
+    #     user_code = "\n".join(user_lines)
+    #     test_semantic_analysis(user_code, "Пользовательский код")
+
 
 if __name__ == "__main__":
-    ast = build_tree(sample_code)
-    print("\n".join(ast.tree))
+    main()
