@@ -9,18 +9,13 @@ class SemanticAnalyzer:
         self.global_scope = SymbolTable()
         self.current_scope = self.global_scope
         self.functions: Dict[str, Optional[str]] = {}
-        self.current_function_return: Optional[str] = None  #
+        self.current_function_return: Optional[str] = None
         self.diagnostics = Diagnostics()
         self.loop_depth = 0
 
     def error(self, msg: str, node: AstNode):
-<<<<<<< HEAD
         """Регистрация ошибки с сообщением и узлом."""
         self.diagnostics.report_error(msg, node)
-=======
-        line = getattr(node, 'lineno', '?')
-        self.errors.append(f"{msg}")
->>>>>>> 5669caeb630010d010076062e3af6e95e1dc6d28
 
     def analyze(self, node: AstNode) -> bool:
         """Главный метод анализа, который обрабатывает узлы программы."""
@@ -252,7 +247,6 @@ class SemanticAnalyzer:
     def analyze_print(self, node: PrintNode):
         """Анализ оператора печати."""
         for arg in node.childs:
-<<<<<<< HEAD
             self.analyze(arg)
 
     def analyze_unop(self, node: UnOpNode) -> Optional[str]:
@@ -271,6 +265,6 @@ class SemanticAnalyzer:
                 self.error("NEG operator requires numeric operand", node)
                 return None
             return arg_type
-=======
+
             self.analyze(arg)  # Все типы допустимы для вывода
->>>>>>> 5669caeb630010d010076062e3af6e95e1dc6d28
+

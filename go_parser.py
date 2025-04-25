@@ -43,14 +43,14 @@ def p_var_declaration(p):
                       | VAR IDENT COLON type ASSIGN expression SEMI'''
     if len(p) == 6:
         p[0] = VarDeclNode(
-            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),  # Закрыли IdentNode
+            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
             p[4],
             lineno=p.lineno(1),
             column=p.lexpos(1)
         )
     else:
         p[0] = VarDeclNode(
-            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),  # Добавили column
+            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
             p[4],
             p[6],
             lineno=p.lineno(1),

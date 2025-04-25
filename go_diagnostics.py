@@ -8,14 +8,12 @@ class SemanticError:
         self.line = getattr(node, 'lineno', '?')
         self.column = getattr(node, 'column', '?')
 
-        # Дополнительный поиск позиций в дочерних узлах
         if self.line == '?' and hasattr(node, 'childs') and node.childs:
             first_child = node.childs[0]
             self.line = getattr(first_child, 'lineno', '?')
             self.column = getattr(first_child, 'column', '?')
 
     def __str__(self):
-        # Улучшенное строковое представление
         return f"{self.severity.upper()} (line {self.line}, col {self.column}): {self.message}"
 
 class Diagnostics:
