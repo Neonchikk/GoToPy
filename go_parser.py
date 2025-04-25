@@ -42,9 +42,20 @@ def p_var_declaration(p):
     '''var_declaration : VAR IDENT COLON type SEMI
                       | VAR IDENT COLON type ASSIGN expression SEMI'''
     if len(p) == 6:
-        p[0] = VarDeclNode(IdentNode(p[2]), p[4])
+        p[0] = VarDeclNode(
+            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),  # Закрыли IdentNode
+            p[4],
+            lineno=p.lineno(1),
+            column=p.lexpos(1)
+        )
     else:
-        p[0] = VarDeclNode(IdentNode(p[2]), p[4], p[6])
+        p[0] = VarDeclNode(
+            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),  # Добавили column
+            p[4],
+            p[6],
+            lineno=p.lineno(1),
+            column=p.lexpos(1)
+        )
 
 def p_type(p):
     '''type : TYPE'''
@@ -99,7 +110,12 @@ def p_expression(p):
 def p_assignment_expression(p):
     '''assignment_expression : IDENT ASSIGN expression
                             | IDENT DECLARE expression'''
-    p[0] = AssignNode(IdentNode(p[1]), p[3])
+    p[0] = AssignNode(
+        IdentNode(p[1], lineno=p.lineno(1), column=p.lexpos(1)),
+        p[3],
+        lineno=p.lineno(2),  # Позиция оператора (= или :=)
+        column=p.lexpos(2)
+    )
 
 def p_logical_or_expression(p):
     '''logical_or_expression : logical_and_expression
@@ -174,15 +190,20 @@ def p_primary_expression(p):
                          | IDENT LPAREN args RPAREN'''
     if len(p) == 2:
         if isinstance(p[1], (int, float)):
-            p[0] = NumNode(p[1])
+            p[0] = NumNode(p[1], lineno=p.lineno(1), column=p.lexpos(1))
         elif p[1] in ('true', 'false'):
-            p[0] = BoolNode(p[1] == 'true')
-        else:
-            p[0] = IdentNode(p[1])
+            p[0] = BoolNode(p[1] == 'true', lineno=p.lineno(1), column=p.lexpos(1))
+        elif isinstance(p[1], str):
+            p[0] = IdentNode(p[1], lineno=p.lineno(1), column=p.lexpos(1))
     elif len(p) == 4:
         p[0] = p[2]
     else:
-        p[0] = FuncCallNode(IdentNode(p[1]), p[3])
+        p[0] = FuncCallNode(
+            IdentNode(p[1], lineno=p.lineno(1), column=p.lexpos(1)),
+            p[3],
+            lineno=p.lineno(1),
+            column=p.lexpos(1)
+        )
 
 def p_args(p):
     '''args : expression
@@ -198,13 +219,41 @@ def p_func_declaration(p):
                        | FUNC IDENT LPAREN params RPAREN block_statement
                        | FUNC IDENT LPAREN RPAREN block_statement'''
     if len(p) == 9:
-        p[0] = FuncDeclNode(IdentNode(p[2]), p[4], p[7], p[8])
+        p[0] = FuncDeclNode(
+            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
+            p[4],
+            p[7],
+            p[8],
+            lineno=p.lineno(1),
+            column=p.lexpos(1)
+        )
     elif len(p) == 8:
-        p[0] = FuncDeclNode(IdentNode(p[2]), [], p[6], p[7])
+        p[0] = FuncDeclNode(
+            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
+            [],
+            p[6],
+            p[7],
+            lineno=p.lineno(1),
+            column=p.lexpos(1)
+        )
     elif len(p) == 7:
-        p[0] = FuncDeclNode(IdentNode(p[2]), p[4], None, p[6])
+        p[0] = FuncDeclNode(
+            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
+            p[4],
+            None,
+            p[6],
+            lineno=p.lineno(1),
+            column=p.lexpos(1)
+        )
     else:
-        p[0] = FuncDeclNode(IdentNode(p[2]), [], None, p[5])
+        p[0] = FuncDeclNode(
+            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
+            [],
+            None,
+            p[5],
+            lineno=p.lineno(1),
+            column=p.lexpos(1)
+        )
 
 def p_params(p):
     '''params : param

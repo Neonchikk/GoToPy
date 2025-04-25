@@ -4,22 +4,21 @@ from enum import Enum
 
 
 class AstNode(ABC):
-    """Абстрактный базовый класс для всех узлов AST"""
+    def __init__(self, lineno=None, column=None):
+        self.lineno = lineno
+        self.column = column
 
     @property
     @abstractmethod
     def childs(self) -> Tuple['AstNode', ...]:
-        """Возвращает дочерние узлы"""
         pass
 
     @abstractmethod
     def __str__(self) -> str:
-        """Строковое представление узла"""
         pass
 
     @property
     def tree(self) -> List[str]:
-        """Формирует дерево в виде списка строк (для вывода)"""
         res = [str(self)]
         for i, child in enumerate(self.childs):
             ch0, ch = '├', '│'
@@ -31,14 +30,12 @@ class AstNode(ABC):
 
 
 class ValueNode(AstNode, ABC):
-    """Базовый класс для всех узлов-значений (числа, строки, выражения)"""
     pass
 
 
 class NumNode(ValueNode):
-    """Узел для числовых литералов (42, 3.14)"""
-
-    def __init__(self, value: float):
+    def __init__(self, value: float, lineno=None, column=None):
+        super().__init__(lineno, column)
         self.value = value
 
     @property
@@ -50,9 +47,8 @@ class NumNode(ValueNode):
 
 
 class IdentNode(ValueNode):
-    """Узел для идентификаторов (переменные, имена функций)"""
-
-    def __init__(self, name: str):
+    def __init__(self, name: str, lineno=None, column=None):
+        super().__init__(lineno, column)
         self.name = name
 
     @property
@@ -64,9 +60,8 @@ class IdentNode(ValueNode):
 
 
 class BoolNode(ValueNode):
-    """Узел для булевых значений (true/false)"""
-
-    def __init__(self, value: bool):
+    def __init__(self, value: bool, lineno=None, column=None):
+        super().__init__(lineno, column)
         self.value = value
 
     @property
@@ -78,7 +73,6 @@ class BoolNode(ValueNode):
 
 
 class BinOp(Enum):
-    """Бинарные операции"""
     ADD = '+'
     SUB = '-'
     MUL = '*'
@@ -95,9 +89,8 @@ class BinOp(Enum):
 
 
 class BinOpNode(ValueNode):
-    """Узел для бинарных операций (a + b, x && y)"""
-
-    def __init__(self, op: BinOp, left: ValueNode, right: ValueNode):
+    def __init__(self, op: BinOp, left: ValueNode, right: ValueNode, lineno=None, column=None):
+        super().__init__(lineno, column)
         self.op = op
         self.left = left
         self.right = right
@@ -111,15 +104,13 @@ class BinOpNode(ValueNode):
 
 
 class UnOp(Enum):
-    """Унарные операции"""
     NEG = '-'
     NOT = '!'
 
 
 class UnOpNode(ValueNode):
-    """Узел для унарных операций (-x, !flag)"""
-
-    def __init__(self, op: UnOp, arg: ValueNode):
+    def __init__(self, op: UnOp, arg: ValueNode, lineno=None, column=None):
+        super().__init__(lineno, column)
         self.op = op
         self.arg = arg
 
@@ -132,9 +123,8 @@ class UnOpNode(ValueNode):
 
 
 class BlockNode(AstNode):
-    """Узел для блоков кода { ... }"""
-
-    def __init__(self, statements: List[AstNode]):
+    def __init__(self, statements: List[AstNode], lineno=None, column=None):
+        super().__init__(lineno, column)
         self.statements = statements
 
     @property
@@ -146,9 +136,8 @@ class BlockNode(AstNode):
 
 
 class VarDeclNode(AstNode):
-    """Узел для объявления переменных (var x: int = 10)"""
-
-    def __init__(self, name: IdentNode, type_: str, value: Optional[ValueNode] = None):
+    def __init__(self, name: IdentNode, type_: str, value: Optional[ValueNode] = None, lineno=None, column=None):
+        super().__init__(lineno, column)
         self.name = name
         self.type = type_
         self.value = value
@@ -164,9 +153,8 @@ class VarDeclNode(AstNode):
 
 
 class AssignNode(AstNode):
-    """Узел для присваивания (x = 10)"""
-
-    def __init__(self, target: IdentNode, value: ValueNode):
+    def __init__(self, target: IdentNode, value: ValueNode, lineno=None, column=None):
+        super().__init__(lineno, column)
         self.target = target
         self.value = value
 
@@ -179,9 +167,8 @@ class AssignNode(AstNode):
 
 
 class PrintNode(AstNode):
-    """Узел для вывода (print("Hello"))"""
-
-    def __init__(self, args: List[ValueNode]):
+    def __init__(self, args: List[ValueNode], lineno=None, column=None):
+        super().__init__(lineno, column)
         self.args = args
 
     @property
@@ -193,9 +180,9 @@ class PrintNode(AstNode):
 
 
 class IfNode(AstNode):
-    """Узел для условия (if x > 0 { ... } else { ... })"""
-
-    def __init__(self, cond: ValueNode, then_block: AstNode, else_block: Optional[AstNode] = None):
+    def __init__(self, cond: ValueNode, then_block: AstNode, else_block: Optional[AstNode] = None, lineno=None,
+                 column=None):
+        super().__init__(lineno, column)
         self.cond = cond
         self.then_block = then_block
         self.else_block = else_block
@@ -209,10 +196,9 @@ class IfNode(AstNode):
 
 
 class ForNode(AstNode):
-    """Узел для цикла for (for i := 0; i < 10; i++ { ... })"""
-
     def __init__(self, init: Optional[AstNode], cond: Optional[ValueNode],
-                 step: Optional[AstNode], body: AstNode):
+                 step: Optional[AstNode], body: AstNode, lineno=None, column=None):
+        super().__init__(lineno, column)
         self.init = init
         self.cond = cond
         self.step = step
@@ -227,9 +213,8 @@ class ForNode(AstNode):
 
 
 class ProgramNode(AstNode):
-    """Корневой узел программы (список всех выражений)"""
-
-    def __init__(self, statements: List[AstNode]):
+    def __init__(self, statements: List[AstNode], lineno=None, column=None):
+        super().__init__(lineno, column)
         self.statements = statements
 
     @property
@@ -241,9 +226,8 @@ class ProgramNode(AstNode):
 
 
 class ParamNode(AstNode):
-    """Узел для параметров функции (n: int)"""
-
-    def __init__(self, name: IdentNode, type_: str):
+    def __init__(self, name: IdentNode, type_: str, lineno=None, column=None):
+        super().__init__(lineno, column)
         self.name = name
         self.type = type_
 
@@ -256,9 +240,9 @@ class ParamNode(AstNode):
 
 
 class FuncDeclNode(AstNode):
-    """Узел для объявления функции (func foo(): int { ... })"""
-
-    def __init__(self, name: IdentNode, params: List[ParamNode], return_type: Optional[str], body: AstNode):
+    def __init__(self, name: IdentNode, params: List[ParamNode], return_type: Optional[str], body: AstNode, lineno=None,
+                 column=None):
+        super().__init__(lineno, column)
         self.name = name
         self.params = params
         self.return_type = return_type
@@ -273,9 +257,8 @@ class FuncDeclNode(AstNode):
 
 
 class FuncCallNode(ValueNode):
-    """Узел для вызова функции (factorial(5))"""
-
-    def __init__(self, name: IdentNode, args: List[ValueNode]):
+    def __init__(self, name: IdentNode, args: List[ValueNode], lineno=None, column=None):
+        super().__init__(lineno, column)
         self.name = name
         self.args = args
 
@@ -288,9 +271,8 @@ class FuncCallNode(ValueNode):
 
 
 class ReturnNode(AstNode):
-    """Узел для return (return 42)"""
-
-    def __init__(self, value: Optional[ValueNode]):
+    def __init__(self, value: Optional[ValueNode], lineno=None, column=None):
+        super().__init__(lineno, column)
         self.value = value
 
     @property
@@ -299,44 +281,3 @@ class ReturnNode(AstNode):
 
     def __str__(self) -> str:
         return 'return'
-
-
-class Symbol:
-    """Информация о символе (переменная/функция)"""
-
-    def __init__(self, name: str, type_: str, scope: str, node: AstNode):
-        self.name = name
-        self.type = type_
-        self.scope = scope  # 'global', 'function', 'block'
-        self.node = node  # Ссылка на AST-узел
-
-
-class SymbolTable:
-    """Таблица символов с поддержкой вложенных областей видимости"""
-
-    def __init__(self, parent=None):
-        self.symbols = {}
-        self.parent = parent
-        self.children = []
-
-    def add(self, symbol: Symbol) -> bool:
-        """Добавляет символ в текущую область видимости"""
-        if symbol.name in self.symbols:
-            return False  # Дублирование
-        self.symbols[symbol.name] = symbol
-        return True
-
-    def lookup(self, name: str, current_scope_only=False) -> Optional[Symbol]:
-        """Поиск символа (рекурсивно по родителям)"""
-        symbol = self.symbols.get(name)
-        if symbol is not None:
-            return symbol
-        if current_scope_only or self.parent is None:
-            return None
-        return self.parent.lookup(name)
-
-    def create_child(self) -> 'SymbolTable':
-        """Создает дочернюю область видимости"""
-        child = SymbolTable(self)
-        self.children.append(child)
-        return child

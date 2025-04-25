@@ -17,8 +17,7 @@ def test_semantic_analysis(code: str, test_name: str):
         print("✅ Программа семантически корректна")
     else:
         print("❌ Обнаружены ошибки:")
-        for error in analyzer.errors:
-            print(f"  - {error}")
+        analyzer.diagnostics.print_errors()
 
 
 def main():
@@ -29,12 +28,6 @@ def main():
             return 1;
         }
         return n * factorial(n - 1);
-    }
-
-    func main(): int {
-        var result: int = factorial(5);
-        print("Result:", result);
-        return 0;
     }
     """
 
@@ -58,19 +51,6 @@ def main():
     # Тестирование
     test_semantic_analysis(correct_code, "Корректная программа")
     test_semantic_analysis(error_code, "Программа с ошибками")
-
-    # Интерактивный режим (можно ввести свой код на языке Go для проверки)
-    # print("\n\nВы можете ввести свой код для проверки (завершите ввод пустой строкой):")
-    # user_lines = []
-    # while True:
-    #     line = input()
-    #     if not line:
-    #         break
-    #     user_lines.append(line)
-    #
-    # if user_lines:
-    #     user_code = "\n".join(user_lines)
-    #     test_semantic_analysis(user_code, "Пользовательский код")
 
 
 if __name__ == "__main__":
