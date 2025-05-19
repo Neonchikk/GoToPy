@@ -41,21 +41,16 @@ def p_block_statement(p):
 def p_var_declaration(p):
     '''var_declaration : VAR IDENT COLON type SEMI
                       | VAR IDENT COLON type ASSIGN expression SEMI'''
-    if len(p) == 6:
-        p[0] = VarDeclNode(
-            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
-            p[4],
-            lineno=p.lineno(1),
-            column=p.lexpos(1)
-        )
-    else:
-        p[0] = VarDeclNode(
-            IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
-            p[4],
-            p[6],
-            lineno=p.lineno(1),
-            column=p.lexpos(1)
-        )
+    ident = IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2))
+    expr = p[6] if len(p) == 8 else None
+    var_type = p[4]
+
+    # Обновляем тип узла переменной
+    ident.node_type = var_type
+    if expr:
+        expr.node_type = var_type
+
+    p[0] = VarDeclNode(ident, var_type, expr, lineno=p.lineno(1), column=p.lexpos(1))
 
 def p_type(p):
     '''type : TYPE'''
