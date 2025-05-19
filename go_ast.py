@@ -4,9 +4,10 @@ from enum import Enum
 
 
 class AstNode(ABC):
-    def __init__(self, lineno=None, column=None):
+    def __init__(self, lineno=None, column=None, node_type=None):
         self.lineno = lineno
         self.column = column
+        self.node_type = node_type
 
     @property
     @abstractmethod
@@ -35,7 +36,7 @@ class ValueNode(AstNode, ABC):
 
 class NumNode(ValueNode):
     def __init__(self, value: float, lineno=None, column=None):
-        super().__init__(lineno, column)
+        super().__init__(lineno, column, node_type='float' if isinstance(value, float) else 'int')
         self.value = value
 
     @property
