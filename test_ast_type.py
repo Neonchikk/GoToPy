@@ -1,14 +1,15 @@
 from go_parser import build_tree
+from go_ast import AstNode
 
 
-def print_ast(node, indent=0):
-    """Рекурсивно выводит дерево AST без типов"""
+def print_ast_with_types(node: AstNode, indent=0):
+    """Рекурсивно выводит дерево AST с типами."""
     if node is None:
         print("  " * indent + "None")
         return
-    print("  " * indent + str(node))
+    print("  " * indent + f"{str(node)} (type: {getattr(node, 'node_type', 'unknown')})")
     for child in node.childs:
-        print_ast(child, indent + 1)
+        print_ast_with_types(child, indent + 1)
 
 
 def test_simple_expressions():
@@ -22,9 +23,9 @@ def test_simple_expressions():
     print("\n=== Тест 1: Простые выражения ===")
     print("Исходный код:")
     print(code)
-    print("AST:")
+    print("AST с типами:")
     ast = build_tree(code)
-    print_ast(ast)
+    print_ast_with_types(ast)
 
 
 def test_arithmetic_operations():
@@ -37,9 +38,9 @@ def test_arithmetic_operations():
     print("\n=== Тест 2: Арифметические операции ===")
     print("Исходный код:")
     print(code)
-    print("AST:")
+    print("AST с типами:")
     ast = build_tree(code)
-    print_ast(ast)
+    print_ast_with_types(ast)
 
 
 def test_conditional_statements():
@@ -55,9 +56,9 @@ def test_conditional_statements():
     print("\n=== Тест 3: Условные операторы ===")
     print("Исходный код:")
     print(code)
-    print("AST:")
+    print("AST с типами:")
     ast = build_tree(code)
-    print_ast(ast)
+    print_ast_with_types(ast)
 
 
 def test_functions():
@@ -70,9 +71,9 @@ def test_functions():
     print("\n=== Тест 4: Функции ===")
     print("Исходный код:")
     print(code)
-    print("AST:")
+    print("AST с типами:")
     ast = build_tree(code)
-    print_ast(ast)
+    print_ast_with_types(ast)
 
 
 def test_complex():
@@ -91,7 +92,6 @@ def test_complex():
         }
         return true;
     }
-
     func sumDigits(n: int): int {
         var sum: int = 0;
         var num: int = n;
@@ -101,7 +101,6 @@ def test_complex():
         }
         return sum;
     }
-
     func generateSequence(start: int, count: int): string {
         var result: string = "";
         var current: int = start;
@@ -126,13 +125,11 @@ def test_complex():
         }
         return result;
     }
-
     var start: int = 10;
     var count: int = 5;
     print("Генерируем последовательность из " + count + " чисел, начиная с " + start);
     var sequence: string = generateSequence(start, count);
     print(sequence);
-
     var max: int = 3;
     var i: int = 1;
     while (i <= max) {
@@ -154,11 +151,11 @@ def test_complex():
     print("\n=== Тест 5: Комплексный тест ===")
     print("Исходный код:")
     print(code)
-    print("AST:")
+    print("AST с типами:")
     try:
         ast = build_tree(code)
         if ast:
-            print_ast(ast)
+            print_ast_with_types(ast)
         else:
             print("Ошибка: AST не был построен")
     except Exception as e:
@@ -175,9 +172,9 @@ def test_floating_point():
     print("\n=== Тест 6: Числа с плавающей точкой ===")
     print("Исходный код:")
     print(code)
-    print("AST:")
+    print("AST с типами:")
     ast = build_tree(code)
-    print_ast(ast)
+    print_ast_with_types(ast)
 
 
 def test_ast_print():
