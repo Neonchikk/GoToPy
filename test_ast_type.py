@@ -13,8 +13,6 @@ def print_ast_with_types(node: AstNode, indent=0):
 def test_simple_expressions(code):
     """Тест 1: Простые выражения"""
     print("\n=== Тест 1: Простые выражения ===")
-    print("Исходный код:")
-    print(code)
     print("AST с типами:")
     try:
         ast = build_tree(code)
@@ -25,8 +23,6 @@ def test_simple_expressions(code):
 def test_arithmetic_operations(code):
     """Тест 2: Арифметические операции"""
     print("\n=== Тест 2: Арифметические операции ===")
-    print("Исходный код:")
-    print(code)
     print("AST с типами:")
     try:
         ast = build_tree(code)
@@ -37,8 +33,6 @@ def test_arithmetic_operations(code):
 def test_conditional_statements(code):
     """Тест 3: Условные операторы"""
     print("\n=== Тест 3: Условные операторы ===")
-    print("Исходный код:")
-    print(code)
     print("AST с типами:")
     try:
         ast = build_tree(code)
@@ -49,8 +43,6 @@ def test_conditional_statements(code):
 def test_functions(code):
     """Тест 4: Функции"""
     print("\n=== Тест 4: Функции ===")
-    print("Исходный код:")
-    print(code)
     print("AST с типами:")
     try:
         ast = build_tree(code)
@@ -61,8 +53,6 @@ def test_functions(code):
 def test_complex(code):
     """Тест 5: Комплексный тест"""
     print("\n=== Тест 5: Комплексный тест ===")
-    print("Исходный код:")
-    print(code)
     print("AST с типами:")
     try:
         ast = build_tree(code)
@@ -76,8 +66,6 @@ def test_complex(code):
 def test_floating_point(code):
     """Тест 6: Числа с плавающей точкой"""
     print("\n=== Тест 6: Числа с плавающей точкой ===")
-    print("Исходный код:")
-    print(code)
     print("AST с типами:")
     try:
         ast = build_tree(code)

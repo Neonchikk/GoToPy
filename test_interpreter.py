@@ -5,8 +5,6 @@ from go_interpreter import Interpreter
 def test_arithmetic_operations(code):
     """Тест 1: Арифметические операции"""
     print("\n=== Тест 1: Арифметические операции ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)
@@ -18,8 +16,6 @@ def test_arithmetic_operations(code):
 def test_conditional_statements(code):
     """Тест 2: Условный оператор"""
     print("\n=== Тест 2: Условный оператор ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)
@@ -31,8 +27,6 @@ def test_conditional_statements(code):
 def test_for_loop(code):
     """Тест 3: Цикл for"""
     print("\n=== Тест 3: Цикл for ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)
@@ -44,8 +38,6 @@ def test_for_loop(code):
 def test_functions(code):
     """Тест 4: Функции"""
     print("\n=== Тест 4: Функции ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)
@@ -57,8 +49,6 @@ def test_functions(code):
 def test_factorial(code):
     """Тест 5: Работа программы из мейн"""
     print("\n=== Тест 5: Работа программы из мейн ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)
@@ -70,8 +60,6 @@ def test_factorial(code):
 def test_string_operations(code):
     """Тест 6: Работа со строками"""
     print("\n=== Тест 6: Работа со строками ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)
@@ -83,8 +71,6 @@ def test_string_operations(code):
 def test_boolean_operations(code):
     """Тест 7: Работа с булевыми значениями"""
     print("\n=== Тест 7: Работа с булевыми значениями ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)
@@ -96,8 +82,6 @@ def test_boolean_operations(code):
 def test_while_loop(code):
     """Тест 8: Цикл while"""
     print("\n=== Тест 8: Цикл while ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)
@@ -109,8 +93,6 @@ def test_while_loop(code):
 def test_complex(code):
     """Тест 9: Комплексный тест"""
     print("\n=== Тест 9: Комплексный тест ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)
@@ -122,8 +104,6 @@ def test_complex(code):
 def test_floating_point(code):
     """Тест 10: Операции с плавающей точкой"""
     print("\n=== Тест 10: Операции с плавающей точкой ===")
-    print("Исходный код:")
-    print(code)
     print("Результат интерпретации:")
     try:
         ast = build_tree(code)

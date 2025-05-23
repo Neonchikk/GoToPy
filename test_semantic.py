@@ -4,8 +4,6 @@ from go_semantic import SemanticAnalyzer
 def test_semantic_analysis(code: str, test_name: str):
     """Общая функция для выполнения семантического анализа теста"""
     print(f"\n{'=' * 50}\nТест: {test_name}\n{'=' * 50}")
-    print("Исходный код:")
-    print(code.strip())
     print("\nСемантический анализ:")
     try:
         ast = build_tree(code)
