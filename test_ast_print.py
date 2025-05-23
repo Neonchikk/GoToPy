@@ -1,6 +1,5 @@
 from go_parser import build_tree
 
-
 def print_ast(node, indent=0):
     """Рекурсивно выводит дерево AST без типов"""
     if node is None:
@@ -10,74 +9,112 @@ def print_ast(node, indent=0):
     for child in node.childs:
         print_ast(child, indent + 1)
 
-
-def test_simple_expressions():
+def test_simple_expressions(code):
     """Тест 1: Простые выражения"""
-    code = """
-    var x: int = 5;
-    var y: float = 3.14;
-    var z: string = "Hello";
-    var b: bool = true;
-    """
     print("\n=== Тест 1: Простые выражения ===")
     print("Исходный код:")
     print(code)
     print("AST:")
-    ast = build_tree(code)
-    print_ast(ast)
+    try:
+        ast = build_tree(code)
+        print_ast(ast)
+    except Exception as e:
+        print(f"Ошибка при построении AST: {str(e)}")
 
-
-def test_arithmetic_operations():
+def test_arithmetic_operations(code):
     """Тест 2: Арифметические операции"""
-    code = """
-    var a: int = 10;
-    var b: int = 5;
-    var c: int = a + b * 2;
-    """
     print("\n=== Тест 2: Арифметические операции ===")
     print("Исходный код:")
     print(code)
     print("AST:")
-    ast = build_tree(code)
-    print_ast(ast)
+    try:
+        ast = build_tree(code)
+        print_ast(ast)
+    except Exception as e:
+        print(f"Ошибка при построении AST: {str(e)}")
 
-
-def test_conditional_statements():
+def test_conditional_statements(code):
     """Тест 3: Условные операторы"""
-    code = """
+    print("\n=== Тест 3: Условные операторы ===")
+    print("Исходный код:")
+    print(code)
+    print("AST:")
+    try:
+        ast = build_tree(code)
+        print_ast(ast)
+    except Exception as e:
+        print(f"Ошибка при построении AST: {str(e)}")
+
+def test_functions(code):
+    """Тест 4: Функции"""
+    print("\n=== Тест 4: Функции ===")
+    print("Исходный код:")
+    print(code)
+    print("AST:")
+    try:
+        ast = build_tree(code)
+        print_ast(ast)
+    except Exception as e:
+        print(f"Ошибка при построении AST: {str(e)}")
+
+def test_complex(code):
+    """Тест 5: Комплексный тест"""
+    print("\n=== Тест 5: Комплексный тест ===")
+    print("Исходный код:")
+    print(code)
+    print("AST:")
+    try:
+        ast = build_tree(code)
+        if ast:
+            print_ast(ast)
+        else:
+            print("Ошибка: AST не был построен")
+    except Exception as e:
+        print(f"Ошибка при построении AST: {str(e)}")
+
+def test_floating_point(code):
+    """Тест 6: Числа с плавающей точкой"""
+    print("\n=== Тест 6: Числа с плавающей точкой ===")
+    print("Исходный код:")
+    print(code)
+    print("AST:")
+    try:
+        ast = build_tree(code)
+        print_ast(ast)
+    except Exception as e:
+        print(f"Ошибка при построении AST: {str(e)}")
+
+def test_ast_print(code=None):
+    """Основная функция для запуска всех тестов"""
+    if code:
+        print("Запуск теста с пользовательским кодом")
+        test_simple_expressions(code)  # Пример: запуск только одного теста
+    else:
+        test_simple_expressions("""
+    var x: int = 5;
+    var y: float = 3.14;
+    var z: string = "Hello";
+    var b: bool = true;
+    """)
+        test_arithmetic_operations("""
+    var a: int = 10;
+    var b: int = 5;
+    var c: int = a + b * 2;
+    """)
+        test_conditional_statements("""
     var x: int = 10;
     if x > 5 {
         var y: int = 20;
     } else {
         var z: int = 30;
     }
-    """
-    print("\n=== Тест 3: Условные операторы ===")
-    print("Исходный код:")
-    print(code)
-    print("AST:")
-    ast = build_tree(code)
-    print_ast(ast)
-
-
-def test_functions():
-    """Тест 4: Функции"""
-    code = """
+    """)
+        test_functions("""
     func add(a: int, b: int): int {
         return a + b;
     }
-    """
-    print("\n=== Тест 4: Функции ===")
-    print("Исходный код:")
-    print(code)
-    print("AST:")
-    ast = build_tree(code)
-    print_ast(ast)
-
-
-def test_complex():
-    """Тест 5: Комплексный тест"""
-    code = """
+    """)
+        test_complex("""
     func isPrime(n: int): bool {
         if (n <= 1) {
             return false;
@@ -91,7 +128,6 @@ def test_complex():
         }
         return true;
     }
-
     func sumDigits(n: int): int {
         var sum: int = 0;
         var num: int = n;
@@ -101,7 +137,6 @@ def test_complex():
         }
         return sum;
     }
-
     func generateSequence(start: int, count: int): string {
         var result: string = "";
         var current: int = start;
@@ -112,27 +147,23 @@ def test_complex():
             } else {
                 result = result + "Составное: " + current;
             }
-
             var sum: int = sumDigits(current);
             if (sum % 2 == 0) {
                 result = result + " (четная сумма цифр)";
             } else {
                 result = result + " (нечетная сумма цифр)";
             }
-
             result = result + "\\n";
             current = current + 1;
             i = i + 1;
         }
         return result;
     }
-
     var start: int = 10;
     var count: int = 5;
     print("Генерируем последовательность из " + count + " чисел, начиная с " + start);
     var sequence: string = generateSequence(start, count);
     print(sequence);
-
     var max: int = 3;
     var i: int = 1;
     while (i <= max) {
@@ -150,45 +181,12 @@ def test_complex():
         }
         i = i + 1;
     }
-    """
-    print("\n=== Тест 5: Комплексный тест ===")
-    print("Исходный код:")
-    print(code)
-    print("AST:")
-    try:
-        ast = build_tree(code)
-        if ast:
-            print_ast(ast)
-        else:
-            print("Ошибка: AST не был построен")
-    except Exception as e:
-        print(f"Ошибка при построении AST: {str(e)}")
-
-
-def test_floating_point():
-    """Тест 6: Числа с плавающей точкой"""
-    code = """
+    """)
+        test_floating_point("""
     var pi: float = 3.14159;
     var temp: float = -25.5;
     var result: float = pi * 2.0 + temp / 3.0;
-    """
-    print("\n=== Тест 6: Числа с плавающей точкой ===")
-    print("Исходный код:")
-    print(code)
-    print("AST:")
-    ast = build_tree(code)
-    print_ast(ast)
-
-
-def test_ast_print():
-    """Основная функция для запуска всех тестов"""
-    test_simple_expressions()
-    test_arithmetic_operations()
-    test_conditional_statements()
-    test_functions()
-    test_complex()
-    test_floating_point()
-
+    """)
 
 if __name__ == "__main__":
     test_ast_print()
