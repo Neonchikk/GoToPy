@@ -21,10 +21,14 @@ def p_statement(p):
                 | var_declaration
                 | if_statement
                 | for_statement
+                | while_statement
                 | print_statement
                 | func_declaration
                 | return_statement'''
-    p[0] = p[1]
+    if p[1] is None:
+        p[0] = BlockNode([])
+    else:
+        p[0] = p[1]
 
 def p_expression_statement(p):
     '''expression_statement : expression SEMI
@@ -36,7 +40,7 @@ def p_expression_statement(p):
 
 def p_block_statement(p):
     '''block_statement : LBRACE statement_list RBRACE'''
-    p[0] = BlockNode(p[2])
+    p[0] = BlockNode(p[2], lineno=p.lineno(1), column=p.lexpos(1))
 
 def p_var_declaration(p):
     '''var_declaration : VAR IDENT COLON type SEMI
@@ -48,7 +52,11 @@ def p_var_declaration(p):
     # Обновляем тип узла переменной
     ident.node_type = var_type
     if expr:
-        expr.node_type = var_type
+        if var_type == 'string' and isinstance(expr, str):
+            expr = StringNode(expr, lineno=p.lineno(6), column=p.lexpos(6))
+            expr.node_type = 'string'
+        else:
+            expr.node_type = var_type
 
     p[0] = VarDeclNode(ident, var_type, expr, lineno=p.lineno(1), column=p.lexpos(1))
 
@@ -85,9 +93,19 @@ def p_for_statement(p):
     else:
         p[0] = ForNode(None, None, None, BlockNode([]))
 
+def p_while_statement(p):
+    '''while_statement : WHILE LPAREN expression RPAREN statement'''
+    p[0] = WhileNode(p[3], p[5], lineno=p.lineno(1), column=p.lexpos(1))
+
 def p_print_statement(p):
     '''print_statement : PRINT LPAREN expression_list RPAREN SEMI'''
-    p[0] = PrintNode(p[3])
+    args = []
+    for arg in p[3]:
+        if isinstance(arg, str) and p.slice[3].type == 'STRING':
+            arg = StringNode(arg, lineno=p.lineno(3), column=p.lexpos(3))
+            arg.node_type = 'string'
+        args.append(arg)
+    p[0] = PrintNode(args)
 
 def p_expression_list(p):
     '''expression_list : expression
@@ -189,7 +207,11 @@ def p_primary_expression(p):
         elif p[1] in ('true', 'false'):
             p[0] = BoolNode(p[1] == 'true', lineno=p.lineno(1), column=p.lexpos(1))
         elif isinstance(p[1], str):
-            p[0] = IdentNode(p[1], lineno=p.lineno(1), column=p.lexpos(1))
+            if p.slice[1].type == 'STRING':
+                p[0] = StringNode(p[1], lineno=p.lineno(1), column=p.lexpos(1))
+                p[0].node_type = 'string'
+            else:
+                p[0] = IdentNode(p[1], lineno=p.lineno(1), column=p.lexpos(1))
     elif len(p) == 4:
         p[0] = p[2]
     else:
@@ -214,7 +236,7 @@ def p_func_declaration(p):
                        | FUNC IDENT LPAREN params RPAREN block_statement
                        | FUNC IDENT LPAREN RPAREN block_statement'''
     if len(p) == 9:
-        p[0] = FuncDeclNode(
+        node = FuncDeclNode(
             IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
             p[4],
             p[7],
@@ -222,8 +244,10 @@ def p_func_declaration(p):
             lineno=p.lineno(1),
             column=p.lexpos(1)
         )
+        node.node_type = p[7]
+        p[0] = node
     elif len(p) == 8:
-        p[0] = FuncDeclNode(
+        node = FuncDeclNode(
             IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
             [],
             p[6],
@@ -231,8 +255,10 @@ def p_func_declaration(p):
             lineno=p.lineno(1),
             column=p.lexpos(1)
         )
+        node.node_type = p[6]
+        p[0] = node
     elif len(p) == 7:
-        p[0] = FuncDeclNode(
+        node = FuncDeclNode(
             IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
             p[4],
             None,
@@ -240,8 +266,9 @@ def p_func_declaration(p):
             lineno=p.lineno(1),
             column=p.lexpos(1)
         )
+        p[0] = node
     else:
-        p[0] = FuncDeclNode(
+        node = FuncDeclNode(
             IdentNode(p[2], lineno=p.lineno(2), column=p.lexpos(2)),
             [],
             None,
@@ -249,6 +276,7 @@ def p_func_declaration(p):
             lineno=p.lineno(1),
             column=p.lexpos(1)
         )
+        p[0] = node
 
 def p_params(p):
     '''params : param
@@ -272,7 +300,8 @@ def p_return_statement(p):
 
 def p_error(p):
     if p:
-        print(f"Syntax error at token {p.type} ({p.value}) at line {p.lineno}")
+        print(f"Syntax error at token {p.type} ({p.value}) at line {p.lineno}, column {p.lexpos}")
+        print(f"Context: {p.lexer.lexdata[max(0, p.lexpos-20):p.lexpos+20]}")
     else:
         print("Syntax error at EOF")
 

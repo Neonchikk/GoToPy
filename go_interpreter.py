@@ -38,6 +38,8 @@ class Interpreter:
             return self.visit_if(node)
         elif isinstance(node, ForNode):
             return self.visit_for(node)
+        elif isinstance(node, WhileNode):
+            return self.visit_while(node)
         elif isinstance(node, PrintNode):
             return self.visit_print(node)
         elif isinstance(node, BinOpNode):
@@ -47,6 +49,8 @@ class Interpreter:
         elif isinstance(node, NumNode):
             return node.value
         elif isinstance(node, BoolNode):
+            return node.value
+        elif isinstance(node, StringNode):
             return node.value
         elif isinstance(node, IdentNode):
             return self.environment.get(node.name)
@@ -106,8 +110,21 @@ class Interpreter:
             if node.step:
                 self.interpret(node.step)
 
+    def visit_while(self, node: WhileNode) -> Any:
+        while self.interpret(node.cond):
+            result = self.interpret(node.body)
+            if self.should_return:
+                return self.return_value
+        return None
+
     def visit_print(self, node: PrintNode) -> Any:
-        values = [self.interpret(arg) for arg in node.args]
+        values = []
+        for arg in node.args:
+            value = self.interpret(arg)
+            if isinstance(value, bool):
+                values.append(str(value).lower())
+            else:
+                values.append(str(value))
         print(*values)
         return None
 
@@ -116,16 +133,32 @@ class Interpreter:
         right = self.interpret(node.right)
         
         if node.op == BinOp.ADD:
-            return left + right
+            if isinstance(left, str) or isinstance(right, str):
+                if isinstance(left, str):
+                    left = left.replace('\\n', '\n')
+                if isinstance(right, str):
+                    right = right.replace('\\n', '\n')
+                result = str(left) + str(right)
+                return result
+            result = left + right
+            return result
         elif node.op == BinOp.SUB:
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot subtract strings")
             return left - right
         elif node.op == BinOp.MUL:
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot multiply strings")
             return left * right
         elif node.op == BinOp.DIV:
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot divide strings")
             if right == 0:
                 raise InterpreterError("Division by zero")
             return left / right
         elif node.op == BinOp.MOD:
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot use modulo with strings")
             if right == 0:
                 raise InterpreterError("Modulo by zero")
             return left % right
@@ -134,16 +167,36 @@ class Interpreter:
         elif node.op == BinOp.NE:
             return left != right
         elif node.op == BinOp.LT:
+            if isinstance(left, str) and isinstance(right, str):
+                return left < right
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot compare strings with numbers")
             return left < right
         elif node.op == BinOp.LE:
+            if isinstance(left, str) and isinstance(right, str):
+                return left <= right
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot compare strings with numbers")
             return left <= right
         elif node.op == BinOp.GT:
+            if isinstance(left, str) and isinstance(right, str):
+                return left > right
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot compare strings with numbers")
             return left > right
         elif node.op == BinOp.GE:
+            if isinstance(left, str) and isinstance(right, str):
+                return left >= right
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot compare strings with numbers")
             return left >= right
         elif node.op == BinOp.AND:
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot use logical operators with strings")
             return left and right
         elif node.op == BinOp.OR:
+            if isinstance(left, str) or isinstance(right, str):
+                raise InterpreterError("Cannot use logical operators with strings")
             return left or right
         else:
             raise InterpreterError(f"Unknown binary operator: {node.op}")
@@ -166,34 +219,25 @@ class Interpreter:
         func = self.environment.get(node.name.name)
         if not isinstance(func, FuncDeclNode):
             raise InterpreterError(f"{node.name.name} is not a function")
-        
-        # Создаем новое окружение для функции
         func_env = Environment(self.environment)
-        
-        # Вычисляем аргументы
         args = [self.interpret(arg) for arg in node.args]
-        
-        # Устанавливаем параметры в новом окружении
         for param, arg in zip(func.params, args):
             func_env.set(param.name.name, arg)
-        
-        # Сохраняем текущее окружение
         old_env = self.environment
+        old_should_return = self.should_return
+        old_return_value = self.return_value
         self.environment = func_env
-        
-        # Сбрасываем флаги возврата
         self.should_return = False
         self.return_value = None
-        
         try:
             result = self.interpret(func.body)
             if self.should_return:
                 result = self.return_value
+            return result
         finally:
-            # Восстанавливаем окружение
             self.environment = old_env
-        
-        return result
+            self.should_return = old_should_return
+            self.return_value = old_return_value
 
     def visit_return(self, node: ReturnNode) -> Any:
         if node.value:

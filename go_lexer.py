@@ -33,6 +33,7 @@ tokens = (
     'IF',
     'ELSE',
     'FOR',
+    'WHILE',
     'TYPE',
     'FUNC',
     'RETURN'
@@ -46,6 +47,7 @@ reserved = {
     'if': 'IF',
     'else': 'ELSE',
     'for': 'FOR',
+    'while': 'WHILE',
     'int': 'TYPE',
     'float': 'TYPE',
     'bool': 'TYPE',
@@ -95,6 +97,7 @@ def t_NUMBER(t):
 def t_STRING(t):
     r'\"([^\\\n]|(\\.))*?\"'
     t.value = t.value[1:-1]
+    t.type = 'STRING'
     return t
 
 def t_COMMENT(t):

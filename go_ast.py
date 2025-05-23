@@ -73,6 +73,19 @@ class BoolNode(ValueNode):
         return 'true' if self.value else 'false'
 
 
+class StringNode(ValueNode):
+    def __init__(self, value: str, lineno=None, column=None):
+        super().__init__(lineno, column, node_type='string')
+        self.value = value
+
+    @property
+    def childs(self) -> Tuple[()]:
+        return ()
+
+    def __str__(self) -> str:
+        return f'"{self.value}"'
+
+
 class BinOp(Enum):
     ADD = '+'
     SUB = '-'
@@ -211,6 +224,20 @@ class ForNode(AstNode):
 
     def __str__(self) -> str:
         return 'for'
+
+
+class WhileNode(AstNode):
+    def __init__(self, cond: ValueNode, body: AstNode, lineno=None, column=None):
+        super().__init__(lineno, column)
+        self.cond = cond
+        self.body = body
+
+    @property
+    def childs(self) -> Tuple[ValueNode, AstNode]:
+        return self.cond, self.body
+
+    def __str__(self) -> str:
+        return 'while'
 
 
 class ProgramNode(AstNode):
